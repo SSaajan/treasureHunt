@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 var cors = require("cors");
 var nodemailer = require('nodemailer');
 const app = express();
+app.use(cors({origin:true, credentials:true}));
 
 var winners = 0;
 var data = []
@@ -64,7 +65,6 @@ router.post('/', (req, res) => {
     }
 });
 
-app.use(cors());
 app.use(express.json({strict: false}));
 app.use('/.netlify/functions/api', router);
 app.use(bodyParser.urlencoded({ extended: false }));
