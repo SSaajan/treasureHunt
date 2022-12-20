@@ -1,4 +1,5 @@
 const express = require("express");
+require('encoding');
 const serverless = require("serverless-http");
 const bodyParser = require("body-parser");
 var cors = require("cors");
@@ -13,6 +14,7 @@ const OAuth2_client = new OAuth2(config.clientId, config.clientSecret);
 OAuth2_client.setCredentials({refresh_token:config.refreshToken});
 
 function sendMailGoogle(subject, mailString) {
+    console.log("sendMailGoogle called");
     const accessToken = OAuth2_client.getAccessToken();
 
     var transport = nodemailer.createTransport({
@@ -101,6 +103,7 @@ router.post('/', (req, res) => {
             res.json({"Status": "Failed"});
         }
     }
+    console.log(data);
 });
 
 app.use(express.json({strict: false}));
