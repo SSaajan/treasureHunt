@@ -3,22 +3,59 @@ const serverless = require("serverless-http");
 const bodyParser = require("body-parser");
 var cors = require("cors");
 var nodemailer = require('nodemailer');
+const { google } = require('googleapis');
+const config = require('../config.js');
+const OAuth2 = google.auth.OAuth2;
 const app = express();
 app.use(cors({origin:true, credentials:true}));
+
+const OAuth2_client = new OAuth2(config.clientId, config.clientSecret);
+OAuth2_client.setCredentials({refresh_token:config.refreshToken});
+
+function sendMailGoogle(subject, mailString) {
+    const accessToken = OAuth2_client.getAccessToken();
+
+    var transport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            type: 'OAuth2',
+            user: config.user,
+            clientId: config.clientId,
+            clientSecret: config.clientSecret,
+            refreshToken: config.refreshToken,
+            accessToken: accessToken
+        }
+    });
+
+    var mailOptions = {
+        from: 'saajansuraj@gmail.com',
+        to: 'saajansuraj@gmail.com',
+        subject: subject,
+        text: mailString
+    };
+
+    transport.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+    });
+}
 
 var winners = 0;
 var data = []
 
 const router = express.Router();
-const date = new Date();
 
-var transporter = nodemailer.createTransport({
+/* var transporter = nodemailer.createTransport(smtpTransport({
     service: 'gmail',
+    host: 'smtpTransport',
     auth: {
       user: 'saajantest80@gmail.com',
-      pass: 'xgujwkgpaiwnomyd'
+      pass: 'ziyeqmhgrrfhgkfk'
     }
-});
+}));
 
 function sendMail(subject, mailString) {
     var mailOptions = {
@@ -34,7 +71,7 @@ function sendMail(subject, mailString) {
           console.log('Email sent: ' + info.response);
         }
     });
-}
+} */
 
 router.post('/', (req, res) => {
     let valid = true;
@@ -44,6 +81,7 @@ router.post('/', (req, res) => {
             valid = false;
         }
     }))
+    var date = new Date();
     if(valid == true) {
         if(req.body.passphrase == "word" && req.body.key == "key") {
             data.push(req.body);
@@ -51,11 +89,11 @@ router.post('/', (req, res) => {
                 res.json({'place': winners + 1});
                 winners = winners + 1;
                 var mailString = "Position: " + winners + "\nTeamID: " + req.body.teamID + "\nTimeStamp: " + date;
-                sendMail("Winner", mailString);
+                sendMailGoogle("Winner", mailString);
             }
             else {
-                var mailString = "Submission: " + req.body.teamID + ". TimeStamp: " + date;
-                sendMail("Submission", mailString)
+                var mailString = "TeamID: " + req.body.teamID + "\nTimeStamp: " + date;
+                sendMailGoogle("Submission", mailString)
                 res.json({'place': 4});
             }
         }
