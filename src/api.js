@@ -4,13 +4,13 @@ const serverless = require("serverless-http");
 const bodyParser = require("body-parser");
 var cors = require("cors");
 var nodemailer = require('nodemailer');
-const { google } = require('googleapis');
+/* const { google } = require('googleapis');
 const config = require('../config.js');
-const OAuth2 = google.auth.OAuth2;
+const OAuth2 = google.auth.OAuth2; */
 const app = express();
 app.use(cors({origin:true, credentials:true}));
 
-const OAuth2_client = new OAuth2(config.clientId, config.clientSecret);
+/* const OAuth2_client = new OAuth2(config.clientId, config.clientSecret);
 OAuth2_client.setCredentials({refresh_token:config.refreshToken});
 
 function sendMailGoogle(subject, mailString) {
@@ -40,7 +40,7 @@ function sendMailGoogle(subject, mailString) {
           console.log('Email sent: ' + info.response);
         }
     });
-}
+} */
 
 var winners = 0;
 var data = []
@@ -48,14 +48,13 @@ var data = []
 const router = express.Router();
 
 /* var transporter = nodemailer.createTransport(smtpTransport({
-    service: 'gmail',
+    service: 'Mailgun',
     host: 'smtpTransport',
     auth: {
       user: 'saajantest80@gmail.com',
       pass: 'ziyeqmhgrrfhgkfk'
     }
 }));
-
 function sendMail(subject, mailString) {
     var mailOptions = {
         from: 'saajantest80@gmail.com',
@@ -82,17 +81,19 @@ router.post('/', (req, res) => {
     }))
     var date = new Date();
     if(valid == true) {
-        if(req.body.passphrase == "word" && req.body.key == "key") {
+        var text1 = req.body.passphrase.toLowerCase();
+        var key = req.body.key.toLowerCase();
+        if(text1 == "tdenbs" && key == "christmas tree") {
             data.push(req.body);
             if(winners < 3) {
                 res.json({'place': winners + 1});
                 winners = winners + 1;
-                var mailString = "Position: " + winners + "\nTeamID: " + req.body.teamID + "\nTimeStamp: " + date;
-                sendMailGoogle("Winner", mailString);
+                var mailString = "Position: " + winners + "  TeamID: " + req.body.teamID + "  TimeStamp: " + date;
+                console.log("Winner: " + mailString);
             }
             else {
-                var mailString = "TeamID: " + req.body.teamID + "\nTimeStamp: " + date;
-                sendMailGoogle("Submission", mailString)
+                var mailString = "TeamID: " + req.body.teamID + "  TimeStamp: " + date;
+                console.log("Submission: " + mailString);
                 res.json({'place': 4});
             }
         }
