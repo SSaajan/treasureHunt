@@ -18,20 +18,17 @@ function sendMailGoogle(subject, mailString) {
     const accessToken = OAuth2_client.getAccessToken();
 
     var transport = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.ethereal.email',
+        port: 587,
         auth: {
-            type: 'OAuth2',
-            user: config.user,
-            clientId: config.clientId,
-            clientSecret: config.clientSecret,
-            refreshToken: config.refreshToken,
-            accessToken: accessToken
+            user: 'eleanora.brown73@ethereal.email',
+            pass: 'N1KJaArCEMnSf6fdVc'
         }
     });
 
     var mailOptions = {
-        from: 'saajansuraj@gmail.com',
-        to: 'saajansuraj@gmail.com',
+        from: 'eleanora.brown73@ethereal.email',
+        to: 'eleanora.brown73@ethereal.email',
         subject: subject,
         text: mailString
     };
