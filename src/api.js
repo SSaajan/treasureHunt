@@ -85,7 +85,7 @@ router.post('/', (req, res) => {
         dataItem.date = date;
         var text1 = req.body.passphrase.toLowerCase();
         var key = req.body.key.toLowerCase();
-        if(text1 == "tdenbs" && key == "christmas tree") {
+        if(text1 == "tdenbs" && key == "holy grail") {
             data.push(dataItem);
             if(winners < 3) {
                 res.json({'place': winners + 1});
